@@ -2,10 +2,16 @@ const thumbWar = require('../thumb-war')
 const utils = require('../utils')
 
 test('returns winner', () => {
-  const originalGetWinner = utils.getWinner
+  /**
+   * jest.SpyOn(object, methodName)
+   * : Create a function(same as jest.fn()) and implement a call with object[methodName] passed as argument.
+   * (https://jestjs.io/ja/docs/jest-object#jestspyonobject-methodname)
+   */
+  jest.spyOn(utils, 'getWinner')
 
   // Mock function
-  utils.getWinner = jest.fn((player1, player2) => player1)
+  // utils.getWinner = jest.fn((player1, player2) => player1)
+  utils.getWinner.mockImplementation((player1, player2) => player1)
 
   const winner = thumbWar('Kent C. Dodds', 'Ken Wheeler')
   
@@ -16,6 +22,10 @@ test('returns winner', () => {
   ])
 
 
-  // cleanup
-  utils.getWinner = originalGetWinner
+  /**
+   * mockFn.mockRestore()
+   * : Restore the original function.
+   * https://jestjs.io/ja/docs/mock-function-api#mockfnmockrestore
+   */
+  utils.getWinner.mockRestore()
 })
