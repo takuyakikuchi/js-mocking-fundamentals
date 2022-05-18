@@ -1,7 +1,3 @@
-const assert = require('assert')
-const thumbWar = require('../thumb-war')
-const utils = require('../utils')
-
 /**
  * Mock function factory.
  * @param {function} implementation 
@@ -21,22 +17,25 @@ function fn(implementation = () => {}) {
   return mockFn
 }
 
+// https://nodejs.org/api/modules.html#requireresolverequest-options
+const utilsPath = require.resolve('../utils')
 /**
- * This function is responsible for tracking the originalValue.
- * @param {Object} object 
- * @param {String} methodName 
+ * Simulate mocking entire module with require.cache.
+ * https://nodejs.org/api/modules.html#requirecache
  */
-function spyOn(object, methodName) {
-  const originalValue = object[methodName]
-
-  // Set an empty arrow function as a default implementation.
-  object[methodName] = fn()
-
-  object[methodName].mockRestore = () => {object[methodName] = originalValue}
+require.cache[utilsPath] = {
+  id: utilsPath,
+  filename: utilsPath,
+  loaded: true,
+  exports: {
+    // Mock the getWinner function.
+    getWinner: fn((p1, p2) => p1)
+  }
 }
 
-spyOn(utils, 'getWinner')
-utils.getWinner.mockImplementation((p1, p2) => p1)
+const assert = require('assert')
+const thumbWar = require('../thumb-war')
+const utils = require('../utils')
 
 const winner = thumbWar('Kent C. Dodds', 'Ken Wheeler')
 assert.strictEqual(winner, 'Kent C. Dodds')
@@ -47,4 +46,4 @@ assert.deepStrictEqual(utils.getWinner.mock.calls, [
 ])
 
 // cleanup
-utils.getWinner.mockRestore()
+delete require.cache[utilsPath]

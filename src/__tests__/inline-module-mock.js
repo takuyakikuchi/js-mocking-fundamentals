@@ -1,20 +1,21 @@
 const thumbWar = require('../thumb-war')
 const utils = require('../utils')
 
+/**
+ * Mock the entire module.
+ * @param {String} 'path to a module'
+ * @param {Function} 'a module factory function'
+ */
+jest.mock('../utils', () => {
+  return {
+    // Mock the getWinner function.
+    getWinner: jest.fn((p1, p2) => p1)
+  }
+})
+
 test('returns winner', () => {
-  /**
-   * jest.SpyOn(object, methodName)
-   * : Create a function(same as jest.fn()) and implement a call with object[methodName] passed as argument.
-   * (https://jestjs.io/ja/docs/jest-object#jestspyonobject-methodname)
-   */
-  jest.spyOn(utils, 'getWinner')
-
-  // Mock function
-  // utils.getWinner = jest.fn((player1, player2) => player1)
-  utils.getWinner.mockImplementation((player1, player2) => player1)
-
   const winner = thumbWar('Kent C. Dodds', 'Ken Wheeler')
-  
+  expect(winner).toBe('Kent C. Dodds')
   // Testing number of calls and its arguments
   expect(utils.getWinner.mock.calls).toEqual([
     ['Kent C. Dodds', 'Ken Wheeler'],
@@ -22,10 +23,7 @@ test('returns winner', () => {
   ])
 
 
-  /**
-   * mockFn.mockRestore()
-   * : Restore the original function.
-   * https://jestjs.io/ja/docs/mock-function-api#mockfnmockrestore
-   */
-  utils.getWinner.mockRestore()
+  // Cleanup
+  // Reset the mock function to the initial state.
+  utils.getWinner.mockReset()
 })
