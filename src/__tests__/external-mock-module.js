@@ -1,17 +1,8 @@
 const thumbWar = require('../thumb-war')
 const utils = require('../utils')
 
-/**
- * Mock the entire module.
- * @param {String} 'path to a module'
- * @param {Function} 'a module factory function'
- */
-jest.mock('../utils', () => {
-  return {
-    // Mock the getWinner function.
-    getWinner: jest.fn((p1, p2) => p1)
-  }
-})
+// Taking shared mock function from '__mocks__/utils.js' file.
+jest.mock('../utils')
 
 test('returns winner', () => {
   const winner = thumbWar('Kent C. Dodds', 'Ken Wheeler')

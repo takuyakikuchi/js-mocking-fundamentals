@@ -1,37 +1,9 @@
-/**
- * Mock function factory.
- * @param {function} implementation 
- * @returns function that calls the implementation with all of the arguments.
- */
- function fn(implementation = () => {}) {
-  const mockFn = (...arguments) => {
-    mockFn.mock.calls.push(arguments)
-    return implementation(...arguments)
-  }
-
-  // All of the arguments that this function is called with.
-  mockFn.mock = {calls: []};
-
-  mockFn.mockImplementation = newImplementation => {implementation = newImplementation}
-
-  return mockFn
-}
-
+require('../__no-framework-mocks__/utils')
 // https://nodejs.org/api/modules.html#requireresolverequest-options
 const utilsPath = require.resolve('../utils')
-/**
- * Simulate mocking entire module with require.cache.
- * https://nodejs.org/api/modules.html#requirecache
- */
-require.cache[utilsPath] = {
-  id: utilsPath,
-  filename: utilsPath,
-  loaded: true,
-  exports: {
-    // Mock the getWinner function.
-    getWinner: fn((p1, p2) => p1)
-  }
-}
+const mockUtilsPath = require.resolve('../__no-framework-mocks__/utils')
+// Prime the module cache with the exported mock function.
+require.cache[utilsPath] = require.cache[mockUtilsPath]
 
 const assert = require('assert')
 const thumbWar = require('../thumb-war')
